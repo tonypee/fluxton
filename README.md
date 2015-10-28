@@ -1,0 +1,2 @@
+# fluxton
+Flux Singleton Values
