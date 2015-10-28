@@ -12,10 +12,10 @@ If we treat the value in the store as immutable (as best practices suggest in al
 Facebooks flux documentation give an example of calculating a flight cost. We will do that below:
 
 ```
-import Fluxton from './src/Fluxton';
-import FluxtonStore from './src/FluxtonStore';
+import Fluxton from './Fluxton';
+import FluxtonStore from './FluxtonStore';
 
-var fluxton = new Fluxton();
+var fluxton = window.fluxton = new Fluxton();
 
 var summary = fluxton.create('summary');
 var countries = fluxton.create('countries');
@@ -23,21 +23,21 @@ var selectedCountry = fluxton.create('selectedCountry');
 var selectedState = fluxton.create('selectedState');
 var flightCost = fluxton.create('flightCost');
 
-selectedState.onAction = function(action, value) {
-  console.log('#selectedState', action, value)
+selectedState.on('action', function(action, value) {
   this.waitFor('selectedCountry');
+  console.log('selectedState  handle action:', action)
   switch (action) {
     case 'selectedCountry':
       this.value = (`Idahoe(in ${value})`);
       this.emitChange();
     break;
   }
-};
+});
 
 
-flightCost.onAction = function(action, value) {
-  console.log('#flightCost', action, value)
+flightCost.on('action', function(action, value) {
   this.waitFor('selectedCountry', 'selectedState');
+  console.log('flightCost handle action:', action)
   switch (action) {
     case 'selectedCountry':
     case 'selectedState':
@@ -45,11 +45,11 @@ flightCost.onAction = function(action, value) {
       this.emitChange();
     break;
   }
-};
+});
 
-summary.onAction = function(action, value) {
-  console.log('#summary', action)
+summary.on('action', function(action, value) {
   this.waitFor('flightCost');
+  console.log('summary handle action:', action)
   switch (action) {
     case 'selectedCountry':
     case 'selectedState':
@@ -58,19 +58,24 @@ summary.onAction = function(action, value) {
       this.emitChange();
     break;
   }
-};
-
-summary.on('change', function(value) {
-  console.debug('!!! flight cost', value)
 });
 
-console.debug('----', countries);
+flightCost.on('change', function(value) {
+  console.debug('flight cost change: ', value)
+});
+
+summary.on('change', function(value) {
+  console.debug('summary change: ', value)
+});
+
+console.debug('---- set country', countries);
 countries.setValue(['USA', 'australia', 'nz']);
-console.debug('----');
+console.debug('---- set selectedCountry');
 selectedCountry.setValue(fluxton.get('countries').getValue()[0]);
-console.debug('----');
+console.debug('---- set selectedState');
 selectedState.setValue('California');
 console.debug('----');
+
 ```
 
 ### Running the code
