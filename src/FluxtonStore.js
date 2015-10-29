@@ -20,7 +20,7 @@ export default class FluxtonStore extends EventEmitter {
   waitFor(...args) {
     args = args.map(arg => {
       return this.fluxton.get(arg).dispatchToken;
-    })
+    });
     this.fluxton.dispatcher.waitFor(args);
   }
 
