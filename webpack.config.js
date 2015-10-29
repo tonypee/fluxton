@@ -26,7 +26,7 @@ module.exports = {
     filename: 'dist/bundle.js',
     libraryTarget: 'commonjs2'
   },
-  devtool: 'source-map',
+ // devtool: 'source-map',
   module: {
 	loaders: [
 			{

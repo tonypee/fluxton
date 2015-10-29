@@ -1,7 +1,7 @@
 {
   "name": "fluxton",
   "version": "0.0.0",
-  "main": "index.js",
+  "main": "dist/bundle.js",
   "repository": "https://github.com/tonypee/fluxton",
   "license": "MIT",
   "dependencies": {

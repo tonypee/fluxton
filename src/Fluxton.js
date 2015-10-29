@@ -6,11 +6,11 @@ export default class Fluxton {
     this.dispatcher = new flux.Dispatcher();
     this.stores = {};
   }
-  create(name) {
+  create(name, initialValue) {
     if (this.stores[name]) {
       throw `Store ${name} already exists.`
     }
-    return this.stores[name] = new FluxtonStore(this, name);
+    return this.stores[name] = new FluxtonStore(this, name, initialValue);
   }
   get(name) {
     return this.stores[name];
