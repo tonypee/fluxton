@@ -3,13 +3,17 @@ Flux Singleton Values
 
 ###Concept
 
-Flux is about managing data dependencies via uni-directional data flow and the dispatcher's 'waitFor' feature. This allows the developer to, at an action level, define which store should be updated first. A lot of boilerplate is generated in passing the data through actions, into stores, before modifying an underlying value. By adding constraints that each store can only have a single value, and a single action (change), we can retain the ability to have data dependencies, but with less boilerplate.
+Fluxton forces a store to only have a single immutatble value, and a single action. The user generates a 'change', based on creating a new Immutable object, and passes this to 'setValue' which automatically generates an action, passes it to the flux dispatcher, and applies the change to the related store. Since all changes pass through the Dispatcher, other stores can for the action and 'waitFor' the change to be applied, as is expected in flux.
 
-If we treat the value in the store as immutable (as best practices suggest in all flux implementations), then each change will pass through the dispatched, and cause dependent updates, before mutating the store's value.
+Since values are treated as immutable (or use immutable.js) then having the change represent the whole value is not an issue.
 
-##Example
+###TodoMVC Example
 
-Facebooks flux documentation give an example of calculating a flight cost. We will do that below:
+[Fluxton-todoMVC](https://github.com/tonypee/fluxton-todomvc)
+
+###Example
+
+Facebook's flux documentation give an example of calculating a flight cost which has dependent values. Lets explore this below, by creating 5 independent stores, 3 of which are dependent.
 
 ```
 import Fluxton from './Fluxton';
@@ -80,4 +84,8 @@ console.debug('----');
 
 ### Running the code
 
-Copy the source into an existing project - this is just a test.
+npm install
+
+npm install -g webpack
+
+webpack
