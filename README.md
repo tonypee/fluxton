@@ -27,41 +27,19 @@ var selectedCountry = fluxton.create('selectedCountry');
 var selectedState = fluxton.create('selectedState');
 var flightCost = fluxton.create('flightCost');
 
-selectedState.on('action', function(action, value) {
-  this.waitFor('selectedCountry');
-  console.log('selectedState  handle action:', action)
-  switch (action) {
-    case 'selectedCountry':
-      this.value = (`Idahoe(in ${value})`);
-      this.emitChange();
-    break;
-  }
+selectedState.depend(['selectedCountry'], function(){
+  this.value = (`Idahoe(in ${selectedCountry.getValue()})`);
+  this.emitChange();
 });
 
-
-flightCost.on('action', function(action, value) {
-  this.waitFor('selectedCountry', 'selectedState');
-  console.log('flightCost handle action:', action)
-  switch (action) {
-    case 'selectedCountry':
-    case 'selectedState':
-      this.value = (fluxton.get('selectedCountry').getValue() + ' > '  +   fluxton.get('selectedState').getValue());
-      this.emitChange();
-    break;
-  }
+flightCost.depend(['selectedCountry', 'selectedState'], function(){
+  this.value = (fluxton.get('selectedCountry').getValue() + ' to '  +   fluxton.get('selectedState').getValue()) + ' value here';
+  this.emitChange();
 });
 
-summary.on('action', function(action, value) {
-  this.waitFor('flightCost');
-  console.log('summary handle action:', action)
-  switch (action) {
-    case 'selectedCountry':
-    case 'selectedState':
-    case 'flightCost':
-      this.value = (`summary here: ` + fluxton.get('flightCost').getValue());
-      this.emitChange();
-    break;
-  }
+summary.depend(['selectedCountry', 'selectedState', 'flightCost'], function(){
+  this.value = (`summary here: ` + fluxton.get('flightCost').getValue());
+  this.emitChange();
 });
 
 flightCost.on('change', function(value) {

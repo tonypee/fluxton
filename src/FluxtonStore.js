@@ -7,21 +7,38 @@ export default class FluxtonStore extends EventEmitter {
     super();
     this.fluxton = fluxton;
     this.name = name;
+    this.previousValue = null;
     this.value = initialValue;
+    this.dependencies = [];
     this.dispatchToken = this.fluxton.dispatcher.register(payload => {
       if (payload.actionType === this.name) {
+        this.previousValue = this.value;
         this.value = payload.value;
         this.emitChange();
       }
-      this.emit('action', payload.actionType, payload.value);
+      //this.emit('action', payload.actionType, payload.value);
+
+      for (var dependency of this.dependencies) {
+        for (var action of dependency.actions) {
+          if (action == payload.actionType) {
+            this.waitFor(dependency.actions);
+            console.log('CALL!')
+            dependency.callback.call(this);
+          }
+        }
+      }
     });
   }
 
   waitFor(...args) {
-    args = args.map(arg => {
+    args = args[0].map(arg => {
       return this.fluxton.get(arg).dispatchToken;
     });
     this.fluxton.dispatcher.waitFor(args);
+  }
+
+  depend(actions, callback) {
+    this.dependencies.push({ actions, callback })
   }
 
   getValue() {

@@ -149,13 +149,67 @@ module.exports =
 	    _get(Object.getPrototypeOf(FluxtonStore.prototype), 'constructor', this).call(this);
 	    this.fluxton = fluxton;
 	    this.name = name;
+	    this.previousValue = null;
 	    this.value = initialValue;
+	    this.dependencies = [];
 	    this.dispatchToken = this.fluxton.dispatcher.register(function (payload) {
 	      if (payload.actionType === _this.name) {
+	        _this.previousValue = _this.value;
 	        _this.value = payload.value;
 	        _this.emitChange();
 	      }
-	      _this.emit('action', payload.actionType, payload.value);
+	      //this.emit('action', payload.actionType, payload.value);
+
+	      var _iteratorNormalCompletion = true;
+	      var _didIteratorError = false;
+	      var _iteratorError = undefined;
+
+	      try {
+	        for (var _iterator = _this.dependencies[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	          var dependency = _step.value;
+	          var _iteratorNormalCompletion2 = true;
+	          var _didIteratorError2 = false;
+	          var _iteratorError2 = undefined;
+
+	          try {
+	            for (var _iterator2 = dependency.actions[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	              var action = _step2.value;
+
+	              if (action == payload.actionType) {
+	                _this.waitFor(dependency.actions);
+	                console.log('CALL!');
+	                dependency.callback.call(_this);
+	              }
+	            }
+	          } catch (err) {
+	            _didIteratorError2 = true;
+	            _iteratorError2 = err;
+	          } finally {
+	            try {
+	              if (!_iteratorNormalCompletion2 && _iterator2['return']) {
+	                _iterator2['return']();
+	              }
+	            } finally {
+	              if (_didIteratorError2) {
+	                throw _iteratorError2;
+	              }
+	            }
+	          }
+	        }
+	      } catch (err) {
+	        _didIteratorError = true;
+	        _iteratorError = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion && _iterator['return']) {
+	            _iterator['return']();
+	          }
+	        } finally {
+	          if (_didIteratorError) {
+	            throw _iteratorError;
+	          }
+	        }
+	      }
 	    });
 	  }
 
@@ -168,10 +222,15 @@ module.exports =
 	        args[_key] = arguments[_key];
 	      }
 
-	      args = args.map(function (arg) {
+	      args = args[0].map(function (arg) {
 	        return _this2.fluxton.get(arg).dispatchToken;
 	      });
 	      this.fluxton.dispatcher.waitFor(args);
+	    }
+	  }, {
+	    key: 'depend',
+	    value: function depend(actions, callback) {
+	      this.dependencies.push({ actions: actions, callback: callback });
 	    }
 	  }, {
 	    key: 'getValue',
