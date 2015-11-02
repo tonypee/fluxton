@@ -1,3 +1,5 @@
+# THIS IS EXPERIMENTAL. NOT FOR USE
+
 # fluxton
 Flux Singleton Values
 
@@ -67,3 +69,32 @@ npm install
 npm install -g webpack
 
 webpack
+
+
+
+### ideas for future api - grouped stores
+
+storeGroup = storeGroup({
+  countries: store(['australia', 'usa', 'nz'],
+  selectedCountry: store('usa'),
+  selectedCity: store('sf')
+  summary: store('sf'),
+  test: {
+    one:store('test'),
+    two:store('test2'),
+  }
+});
+
+storeGroup.selectedCity.depends([storeGroup.selectedCountry], state => {
+  return getDefault(coutnry);
+}
+
+storeGroup.summary.depends([storeGroup.selectedCountry, storeGroup.selectedCity], state => {
+  return storeGroup.selectedCountry + ' ' storeGroup.selectedCity;
+}
+
+storeGroup.on('change', value=> {
+  //
+})
+
+storeGroup.selectedCountry.update('australia');
